@@ -1,0 +1,24 @@
+{
+  "name": "mqttfilter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aknts/mqttfilter.git"
+  },
+  "author": "aknts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aknts/mqttfilter/issues"
+  },
+  "homepage": "https://github.com/aknts/mqttfilter#readme",
+  "dependencies": {
+    "mqttlogger": "github:aknts/mqttlogger",
+    "mqttmod": "github:aknts/mqttmod",
+    "sqlite3": "^4.0.0"
+  }
+}
