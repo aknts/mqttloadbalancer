@@ -1,0 +1,68 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+        "labels": {
+            "app": "mqtttestapp"
+        },
+        "name": "mqtttestapp",
+        "namespace": "default"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "matchLabels": {
+                "app": "mqtttestapp"
+            }
+        },
+        "strategy": {
+            "rollingUpdate": {
+                "maxSurge": 1,
+                "maxUnavailable": 0
+            },
+            "type": "RollingUpdate"
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "mqtttestapp"
+                }
+            },
+            "spec": {
+                "imagePullSecrets": [
+                    {
+                        "name": "regcred"
+                    }
+                ],
+                "containers": [
+                    {
+                        "name": "mqtttestappcontainer",
+                        "image": "aknts/basicdockercontainer:latest",
+                        "env": [
+                            {
+                                "name": "appname",
+                                "value": "mqtttestapp"
+                            },
+                            {
+                                "name": "appconfig",
+                                "value": "mqtttestappconfig"
+                            },
+                            {
+                                "name": "giturl",
+                                "value": ""
+                            }
+                        ],
+                        "imagePullPolicy": "IfNotPresent",
+                        "resources": {
+                            "requests": {
+                                "cpu": "500m",
+                                "memory": "512Mi"
+                            }
+                        }
+                    }
+                ],
+                "restartPolicy": "Always"
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{
+	"executiontimeout":"1000",
+	"MQMaxThreshold":"500000",
+	"MQMaxPerfThreshold":"500",
+	"MQMinPerfThreshold":"200",
+	"queuesplicevalue":"1000",
+	"scaleTimeout":"300000"
+	"logmode": "1"
+}
