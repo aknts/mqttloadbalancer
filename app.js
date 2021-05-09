@@ -13,14 +13,15 @@ var nextnode = config.nextnode;
 var previousnode = config.previousnode;
 var nextnodebroadcasttopic = nextnode+'/control';
 var previousnodecontroltopic = previousnode+'/control';
-var pipelinetopic = config.nameid+'/broadcast'
+var nameid = config.nameid;
+var pipelinetopic = nameid+'/broadcast'
 var messagequeuelimit = config.appsettings.MQMaxThreshold;
 var upperthreshold = config.appsettings.MQMaxPerfThreshold;
 var lowerthreshold = config.appsettings.MQMinPerfThreshold;
 var queuesplicevalue = config.appsettings.queuesplicevalue;
 var kubectlproxy = config.kubeproxy.split(":");
 var namespace = config.namespace;
-var deployment = config.deployment;
+var deployment;
 var executiontimeout = config.appsettings.executiontimeout;
 var scaleTimeout = config.appsettings.scaleTimeout;
 var dbfile = 'queue.db';
@@ -83,6 +84,7 @@ function filterRequests(payload){
 					if (alpha > -1 && beta == 0) {
 						if (requestingNodeName == 'trilaterator') {
 							livemodules.push({"node":requestingNode,"pid":data.pid,"name":requestingNodeName});
+							deployment = nameid+'/'+nextnode+'/'+data.appname;
 							mqttmod.send(broker,requestingNode+'/'+data.pid+'/control',readyresponse);
 						} else {
 							livemodules.push({"node":requestingNode,"name":requestingNodeName});
