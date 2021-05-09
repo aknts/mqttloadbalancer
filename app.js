@@ -280,6 +280,7 @@ function kubepatch(pods) {
 		"content-type": "application/strategic-merge-patch+json"
 	  }
 	};
+	console.log(options);
 	var req = http.request(options, function (res) {
 		var chunks = [];
 		l.debug('Building request header');
