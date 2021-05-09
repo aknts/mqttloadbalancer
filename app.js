@@ -85,6 +85,7 @@ function filterRequests(payload){
 						if (requestingNodeName == 'trilaterator') {
 							livemodules.push({"node":requestingNode,"pid":data.pid,"name":requestingNodeName});
 							deployment = data.deployment;
+							console.log(data.deployment);
 							mqttmod.send(broker,requestingNode+'/'+data.pid+'/control',readyresponse);
 						} else {
 							livemodules.push({"node":requestingNode,"name":requestingNodeName});
