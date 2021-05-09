@@ -85,7 +85,6 @@ function filterRequests(payload){
 						if (requestingNodeName == 'trilaterator') {
 							livemodules.push({"node":requestingNode,"pid":data.pid,"name":requestingNodeName});
 							deployment = data.deployment;
-							console.log(data.deployment);
 							mqttmod.send(broker,requestingNode+'/'+data.pid+'/control',readyresponse);
 						} else {
 							livemodules.push({"node":requestingNode,"name":requestingNodeName});
@@ -281,7 +280,6 @@ function kubepatch(pods) {
 		"content-type": "application/strategic-merge-patch+json"
 	  }
 	};
-	console.log(options);
 	var req = http.request(options, function (res) {
 		var chunks = [];
 		l.debug('Building request header');
