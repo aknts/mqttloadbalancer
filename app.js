@@ -366,7 +366,7 @@ function heapCheck () {
 }
 
 // Begin execution
-livemodules.push({"node":mynodeid,"name":process.title});
+livemodules.push({"node":mynodeid,"name":"loadbalancer"});
 
 // Create table in our sqlite db
 db.run('create table main (id integer not null primary key autoincrement, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP not null, data string)',  (err,row) => {
