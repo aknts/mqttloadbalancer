@@ -374,7 +374,7 @@ function heapCheck () {
 livemodules.push({"node":mynodeid,"name":"loadbalancer"});
 
 // Create table in our sqlite db
-db.run('create table main (id integer not null primary key autoincrement, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP not null, data string)',  (err,row) => {
+/*db.run('create table main (id integer not null primary key autoincrement, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP not null, data string)',  (err,row) => {
 	if (err) {
 		l.error(err.message);
     } else {
@@ -387,7 +387,7 @@ db.run('create table main (id integer not null primary key autoincrement, timest
 		}
 		});
 	}
-});
+});*/
 
 // Start recieving control MQTT messages
 l.info('Started recieving control MQTT messages on '+controltopic);
