@@ -11,7 +11,7 @@ var controltopic = mynodeid+'/control';
 var datatopic = mynodeid+'/data';
 var nextnode = config.nextnode;
 var previousnode = config.previousnode;
-var nextnodebroadcasttopic = nextnode+'/control';
+//var nextnodebroadcasttopic = nextnode+'/control';
 var previousnodecontroltopic = previousnode+'/control';
 var nameid = config.nameid;
 var pipelinetopic = nameid+'/broadcast'
@@ -24,12 +24,12 @@ var namespace = config.namespace;
 var deployment;
 var executiontimeout = config.appsettings.executiontimeout;
 var scaleTimeout = config.appsettings.scaleTimeout;
-var dbfile = 'queue.db';
+//var dbfile = 'queue.db';
 var logmode = config.appsettings.logmode;
 
 // Modules
-const sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database(':memory:');
+//const sqlite3 = require('sqlite3').verbose();
+//var db = new sqlite3.Database(':memory:');
 const mqttmod = require('mqttmod');
 const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
 var os = require('os');
@@ -44,8 +44,8 @@ var livemodules = [];
 var messageQueue = [];
 var clientQueue = [];
 var clients = [];
-var scaleups = 0;
-var scaledowns = 0;
+//var scaleups = 0;
+//var scaledowns = 0;
 var scaleTimestamp = 0
 var scaleUpTrigger = 0;
 var scaleDownTrigger = 0;
@@ -230,8 +230,8 @@ function regulateConsumers(){
 		l.info('Check next node just in case');
 	}
 
-	//if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
-	if (resultsCounter > nominalClients*upperthreshold && connectedClients < nominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	//if (resultsCounter > nominalClients*upperthreshold && connectedClients < nominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
 
 		scalepods = connectedClients + 1;
 		scaleUpTrigger = 1;
@@ -299,12 +299,14 @@ function kubepatch(pods) {
 function filterResults(payload) {
 	if (halt == 0) {
 		var results = JSON.parse(payload);
-		resultsCounter += results.length;
-		l.info('Adding '+results.length+' results to queue, queue now has '+resultsCounter+' items');
-		insertResults(payload);
+		//resultsCounter += results.length;
+		//l.info('Adding '+results.length+' results to queue, queue now has '+resultsCounter+' items');
+		l.info('Adding '+results.length+' results to queue, queue now has '+messageQueue.length+' items');
+		Array.prototype.push.apply(messageQueue,results);
+		//	insertResults(payload);
 	}
 }
-
+/*
 function insertResults(payload){
 	if (halt == 0) {
 		var results = JSON.parse(payload);
@@ -348,7 +350,7 @@ function getRow(callback,client){
 		});
 	}
 }
-
+*/
 function sendData (results,client) {
 	//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
 	nextnodedatatopic = client.node+'/'+client.pid+'/data';
@@ -358,6 +360,7 @@ function sendData (results,client) {
 function heapCheck () {
 	var usage = '';
 	const used = process.memoryUsage();
+	console.log(used);
 	for (let key in used) {
 		usage = usage.concat(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB, `);
 		if (key == 'external') {
@@ -406,17 +409,23 @@ var interval = setInterval(function(){
 	if (halt == 0) {
 		var nextnodedatatopic;
 		heapCheck();
-		while (resultsCounter > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
+		//while (resultsCounter > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
+		while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
 			var client = clientQueue.shift();
-			var message = getRow(sendData,client);
+			var message = messageQueue.shift();
+			//mqttmod.send(broker,nextnodedatatopic,JSON.stringify(message));
+			sendData(message,client);
+			message = null;
+			client = null;
+			//var message = getRow(sendData,client);
 			//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
 		}
 		//safeguard in case that noone receives the messages and they are stacked in memory
-		/*if (messageQueue.length > messagequeuelimit){
+		if (messageQueue.length > messagequeuelimit){
 			l.info('Queue is full, the length is:'+messageQueue.length);
 			let oldmessages = messageQueue.splice(0,newlimit);
 			l.info('Removed old messages, the new queue length is:'+messageQueue.length);
-		}*/
+		}
 		regulateConsumers();
 	};
 }, executiontimeout);
