@@ -370,7 +370,7 @@ function heapCheck () {
 			l.info('Heap usage: '+usage);
 		}
 		if (key == 'rss') {
-			nowrss =  Math.round((rss / 1024 / 1024 * 100) / 100);
+			nowrss =  Math.round((used[key] / 1024 / 1024 * 100) / 100);
 		}
 	}
 }
