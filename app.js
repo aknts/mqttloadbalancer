@@ -212,7 +212,7 @@ function regulateConsumers(){
 	var scalepods = 0;
 	l.info('Connected clients: '+connectedClients);
 	l.info('Nominal clients: '+nominalClients);
-	l.info('Message queue length is: '+resultsCounter);
+	l.info('Message queue length is: '+messageQueue.length);
 	
 	if (scaleUpTrigger == 1){
 		l.info('A scale up is in progress, waiting for the new client to appear');
