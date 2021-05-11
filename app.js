@@ -25,7 +25,7 @@ var deployment;
 var executiontimeout = config.appsettings.executiontimeout;
 var scaleTimeout = config.appsettings.scaleTimeout;
 var maxrss = config.appsettings.maxrss;
-var runrss = 0;
+var nowrss = 0;
 //var dbfile = 'queue.db';
 var logmode = config.appsettings.logmode;
 
@@ -232,7 +232,7 @@ function regulateConsumers(){
 		l.info('Check next node just in case');
 	}
 
-	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0 || nowrss >= maxrss){
 	//if (resultsCounter > nominalClients*upperthreshold && connectedClients < nominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
 
 		scalepods = connectedClients + 1;
@@ -241,7 +241,7 @@ function regulateConsumers(){
 		l.debug('Scalepods: '+scalepods);
 	}
 
-	if (resultsCounter <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	if (resultsCounter <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0 && nowrss < maxrss){
 		scalepods = connectedClients - 1;
 		scaleDownTrigger = 1;
 		l.info('Scaling down');
@@ -370,8 +370,7 @@ function heapCheck () {
 			l.info('Heap usage: '+usage);
 		}
 		if (key == 'rss') {
-			usage=usage.slice(0, -2);
-			l.info('rss usage: '+usage);
+			nowrss =  Math.round((rss / 1024 / 1024 * 100) / 100);
 		}
 	}
 }
