@@ -24,6 +24,8 @@ var namespace = config.namespace;
 var deployment;
 var executiontimeout = config.appsettings.executiontimeout;
 var scaleTimeout = config.appsettings.scaleTimeout;
+var maxrss = config.appsettings.maxrss;
+var runrss = 0;
 //var dbfile = 'queue.db';
 var logmode = config.appsettings.logmode;
 
@@ -367,6 +369,10 @@ function heapCheck () {
 			usage=usage.slice(0, -2);
 			l.info('Heap usage: '+usage);
 		}
+		if (key == 'rss') {
+			usage=usage.slice(0, -2);
+			l.info('rss usage: '+usage);
+		}
 	}
 }
 
@@ -423,7 +429,7 @@ var interval = setInterval(function(){
 		//safeguard in case that noone receives the messages and they are stacked in memory
 		if (messageQueue.length > messagequeuelimit){
 			l.info('Queue is full, the length is:'+messageQueue.length);
-			let oldmessages = messageQueue.splice(0,newlimit);
+			let oldmessages = messageQueue.splice(0,queuesplicevalue);
 			l.info('Removed old messages, the new queue length is:'+messageQueue.length);
 		}
 		regulateConsumers();
