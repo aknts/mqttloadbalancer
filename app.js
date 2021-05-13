@@ -232,7 +232,8 @@ function regulateConsumers(){
 		l.info('Check next node just in case');
 	}
 
-	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0 || nowrss >= maxrss){
+	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	//if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0 || nowrss >= maxrss){
 	//if (resultsCounter > nominalClients*upperthreshold && connectedClients < nominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
 
 		scalepods = connectedClients + 1;
@@ -241,7 +242,8 @@ function regulateConsumers(){
 		l.debug('Scalepods: '+scalepods);
 	}
 
-	if (resultsCounter <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0 && nowrss < maxrss){
+	if (messageQueue.length <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	//if (resultsCounter <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0 && nowrss < maxrss){
 		scalepods = connectedClients - 1;
 		scaleDownTrigger = 1;
 		l.info('Scaling down');
