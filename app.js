@@ -364,7 +364,7 @@ function sendData (results,client) {
 function heapCheck () {
 	var usage = '';
 	const used = process.memoryUsage();
-	console.log(used);
+	//console.log(used);
 	for (let key in used) {
 		usage = usage.concat(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB, `);
 		if (key == 'external') {
