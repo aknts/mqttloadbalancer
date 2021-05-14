@@ -19,6 +19,7 @@ var messagequeuelimit = config.appsettings.MQMaxThreshold;
 var upperthreshold = config.appsettings.MQMaxPerfThreshold;
 var lowerthreshold = config.appsettings.MQMinPerfThreshold;
 var queuesplicevalue = config.appsettings.queuesplicevalue;
+var maxnominalClients = config.appsettings.maxnominalClients;
 var kubectlproxy = config.kubeproxy.split(":");
 var namespace = config.namespace;
 var deployment;
@@ -209,8 +210,8 @@ function filterRequests(payload){
 function regulateConsumers(){
 
 	var connectedClients = clients.length;
-	//var nominalClients = 2*connectedClients;
-	var nominalClients = 200;
+	var nominalClients = 2*connectedClients;
+	//var nominalClients = 200;
 	var scalepods = 0;
 	l.info('Connected clients: '+connectedClients);
 	l.info('Nominal clients: '+nominalClients);
@@ -232,7 +233,7 @@ function regulateConsumers(){
 		l.info('Check next node just in case');
 	}
 
-	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
+	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= maxnominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
 	//if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0 || nowrss >= maxrss){
 	//if (resultsCounter > nominalClients*upperthreshold && connectedClients < nominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
 

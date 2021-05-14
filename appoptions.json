@@ -4,6 +4,7 @@
 	"MQMaxPerfThreshold":"500",
 	"MQMinPerfThreshold":"200",
 	"queuesplicevalue":"1000",
-	"scaleTimeout":"300000"
+	"scaleTimeout":"300000",
+	"maxnominalClients":"200",
 	"logmode": "1"
 }
