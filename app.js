@@ -417,7 +417,7 @@ var interval = setInterval(function(){
 	if (halt == 0) {
 		var nextnodedatatopic;
 		heapCheck();
-		l.info('Live clients: '+clientQueue.length);
+		l.info('Live clients before assigning new jobs: '+clientQueue.length);
 		//while (resultsCounter > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
 		while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
 			var client = clientQueue.shift();
@@ -429,6 +429,7 @@ var interval = setInterval(function(){
 			//var message = getRow(sendData,client);
 			//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
 		}
+		l.info('Live clients after assigning new jobs: '+clientQueue.length);
 		//safeguard in case that noone receives the messages and they are stacked in memory
 		if (messageQueue.length > messagequeuelimit){
 			l.info('Queue is full, the length is:'+messageQueue.length);
