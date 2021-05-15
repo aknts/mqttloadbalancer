@@ -214,6 +214,7 @@ function regulateConsumers(){
 	//var nominalClients = 200;
 	var scalepods = 0;
 	l.info('Connected clients: '+connectedClients);
+	l.info('Live clients: '+clientQueue.length);
 	l.info('Nominal clients: '+nominalClients);
 	l.info('Message queue length is: '+messageQueue.length);
 	
