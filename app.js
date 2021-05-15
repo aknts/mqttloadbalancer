@@ -214,7 +214,6 @@ function regulateConsumers(){
 	//var nominalClients = 200;
 	var scalepods = 0;
 	l.info('Connected clients: '+connectedClients);
-	l.info('Live clients: '+clientQueue.length);
 	l.info('Nominal clients: '+nominalClients);
 	l.info('Message queue length is: '+messageQueue.length);
 	
@@ -418,6 +417,7 @@ var interval = setInterval(function(){
 	if (halt == 0) {
 		var nextnodedatatopic;
 		heapCheck();
+		l.info('Live clients: '+clientQueue.length);
 		//while (resultsCounter > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
 		while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
 			var client = clientQueue.shift();
