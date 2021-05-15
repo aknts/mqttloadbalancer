@@ -161,6 +161,7 @@ function filterRequests(payload){
 					if (clients[i].node == requestingNode && clients[i].pid == requestingNodePid) {
 						clientQueue.push({"node":requestingNode,"pid":requestingNodePid});
 						checkNode = 1;
+						findClient();
 						//l.info('Node '+requestingNode+ ' with pid '+requestingNodePid+' is now available again');
 					}
 				}
