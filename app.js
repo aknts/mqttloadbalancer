@@ -362,6 +362,19 @@ function sendData (results,client) {
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 };
 
+function findClient () {
+	while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
+		var client = clientQueue.shift();
+		var message = messageQueue.shift();
+		//mqttmod.send(broker,nextnodedatatopic,JSON.stringify(message));
+		sendData(message,client);
+		message = null;
+		client = null;
+		//var message = getRow(sendData,client);
+		//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
+	}
+}
+
 function heapCheck () {
 	var usage = '';
 	const used = process.memoryUsage();
@@ -418,8 +431,9 @@ var interval = setInterval(function(){
 		var nextnodedatatopic;
 		heapCheck();
 		l.info('Live clients before assigning new jobs: '+clientQueue.length);
+		findClient();
 		//while (resultsCounter > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
-		while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
+		/*while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
 			var client = clientQueue.shift();
 			var message = messageQueue.shift();
 			//mqttmod.send(broker,nextnodedatatopic,JSON.stringify(message));
@@ -428,7 +442,7 @@ var interval = setInterval(function(){
 			client = null;
 			//var message = getRow(sendData,client);
 			//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
-		}
+		}*/
 		l.info('Live clients after assigning new jobs: '+clientQueue.length);
 		//safeguard in case that noone receives the messages and they are stacked in memory
 		if (messageQueue.length > messagequeuelimit){
