@@ -212,7 +212,6 @@ function regulateConsumers(){
 
 	var connectedClients = clients.length;
 	var nominalClients = 2*connectedClients;
-	//var nominalClients = 200;
 	var scalepods = 0;
 	l.info('Connected clients: '+connectedClients);
 	l.info('Nominal clients: '+nominalClients);
