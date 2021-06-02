@@ -9,9 +9,7 @@ var mynodeid = config.mynodeid;
 var logtopic = mynodeid+'/log';
 var controltopic = mynodeid+'/control';
 var datatopic = mynodeid+'/data';
-var nextnode = config.nextnode;
 var previousnode = config.previousnode;
-//var nextnodebroadcasttopic = nextnode+'/control';
 var previousnodecontroltopic = previousnode+'/control';
 var nameid = config.nameid;
 var pipelinetopic = nameid+'/broadcast'
@@ -25,17 +23,11 @@ var namespace = config.namespace;
 var deployment;
 var executiontimeout = config.appsettings.executiontimeout;
 var scaleTimeout = config.appsettings.scaleTimeout;
-var maxrss = config.appsettings.maxrss;
-var nowrss = 0;
-//var dbfile = 'queue.db';
 var logmode = config.appsettings.logmode;
 
 // Modules
-//const sqlite3 = require('sqlite3').verbose();
-//var db = new sqlite3.Database(':memory:');
 const mqttmod = require('mqttmod');
 const l = require('mqttlogger')(broker, logtopic, mqttmod, logmode);
-var os = require('os');
 
 // Variables
 var readyresponse = '{"node":"'+mynodeid+'","name":"loadbalancer","request":"ready"}';
@@ -47,14 +39,11 @@ var livemodules = [];
 var messageQueue = [];
 var clientQueue = [];
 var clients = [];
-//var scaleups = 0;
-//var scaledowns = 0;
 var scaleTimestamp = 0
 var scaleUpTrigger = 0;
 var scaleDownTrigger = 0;
 var clientQueueDelTrigger = 0;
 var clientsDelTrigger = 0;
-var resultsCounter = 0;
 
 // Functions
 function filterRequests(payload){
@@ -190,10 +179,8 @@ function filterRequests(payload){
 						}
 						if (i == clientQueue.length && clientQueueDelTrigger == 0) {
 							l.info('Not present in clients queue');
-							//clientQueueDelTrigger = 1;
 						}
 					}
-					//if (clientsDelTrigger == 1 && clientQueueDelTrigger == 1) {
 					if (clientsDelTrigger == 1) {
 						scaleDownTrigger = 0;
 						clientQueueDelTrigger = 0;
@@ -234,8 +221,6 @@ function regulateConsumers(){
 	}
 
 	if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= maxnominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
-	//if (messageQueue.length>nominalClients*upperthreshold && nominalClients <= 15 && scaleUpTrigger == 0 && scaleDownTrigger == 0 || nowrss >= maxrss){
-	//if (resultsCounter > nominalClients*upperthreshold && connectedClients < nominalClients && scaleUpTrigger == 0 && scaleDownTrigger == 0){
 
 		scalepods = connectedClients + 1;
 		scaleUpTrigger = 1;
@@ -244,7 +229,6 @@ function regulateConsumers(){
 	}
 
 	if (messageQueue.length <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0){
-	//if (resultsCounter <= nominalClients*lowerthreshold && connectedClients > 1 && scaleUpTrigger == 0 && scaleDownTrigger == 0 && nowrss < maxrss){
 		scalepods = connectedClients - 1;
 		scaleDownTrigger = 1;
 		l.info('Scaling down');
@@ -254,7 +238,6 @@ function regulateConsumers(){
 		try{
 			scaleTimestamp = Date.now();
 			kubepatch(scalepods);
-			//mqttmod.send(broker,nextnodebroadcasttopic,broadcastrequest);
 			l.debug('Connected clients: '+connectedClients);
 			l.debug('Scaling to: '+scalepods);
 			l.debug('Timestamp is: '+scaleTimestamp);
@@ -274,7 +257,6 @@ function regulateConsumers(){
 }
 
 function kubepatch(pods) {
-	var qs = require("querystring");
 	var http = require("http");	
 	var options = {
 	  "method": "PATCH",
@@ -308,54 +290,9 @@ function filterResults(payload) {
 		//l.info('Adding '+results.length+' results to queue, queue now has '+resultsCounter+' items');
 		l.info('Adding '+results.length+' results to queue, queue now has '+messageQueue.length+' items');
 		Array.prototype.push.apply(messageQueue,results);
-		//	insertResults(payload);
-	}
-}
-/*
-function insertResults(payload){
-	if (halt == 0) {
-		var results = JSON.parse(payload);
-		//l.info('Adding '+results.length+' results to queue db');
-		for (var i=0, n=results.length; i < n; ++i ) {
-			var bufferedResult = new Buffer.from(JSON.stringify(results[i]));
-			bufferedResult = bufferedResult.toString('base64');
-			db.run('insert into main (data) values ("'+bufferedResult+'")',  (err,row) => {
-				if (err) {
-					l.error(err.message);
-					bufferedResult = null;
-				} else {
-					//l.debug('Entry inserted in messages table.');
-					bufferedResult = null;
-				}
-			});
-		}
 	}
 }
 
-function getRow(callback,client){
-	if (halt == 0) {
-		var debufferedRow;
-		db.get('select data from main order by rowid limit 0,1',  (err,row) => {
-			if (err) {
-				l.error(err.message);
-			} else {
-				debufferedRow = new Buffer.from(row.data, 'base64');
-				debufferedRow = debufferedRow.toString('ascii');
-				debufferedRow = JSON.parse(debufferedRow);
-				callback(debufferedRow,client);
-				debufferedRow = null;
-			}
-		});
-		db.run('DELETE FROM main WHERE id = (SELECT id FROM main Order by rowid Limit 0,1)',  (err,row) => {
-			if (err) {
-				l.error(err.message);
-			} else {
-				resultsCounter--;
-			}
-		});
-	}
-}
-*/
 function sendData (results,client) {
 	//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
 	nextnodedatatopic = client.node+'/'+client.pid+'/data';
@@ -394,22 +331,6 @@ function heapCheck () {
 // Begin execution
 livemodules.push({"node":mynodeid,"name":"loadbalancer"});
 
-// Create table in our sqlite db
-/*db.run('create table main (id integer not null primary key autoincrement, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP not null, data string)',  (err,row) => {
-	if (err) {
-		l.error(err.message);
-    } else {
-		l.debug('Main table messages was created.');
-		db.run('CREATE INDEX timestamp ON main (timestamp ASC)',  (err,row) => {
-		if (err) {
-			l.error(err.message);
-		} else {
-			l.debug('Timestamp index created.');		
-		}
-		});
-	}
-});*/
-
 // Start recieving control MQTT messages
 l.info('Started recieving control MQTT messages on '+controltopic);
 mqttmod.receive(broker,controltopic,filterRequests);	
@@ -432,17 +353,6 @@ var interval = setInterval(function(){
 		heapCheck();
 		l.info('Live clients before assigning new jobs: '+clientQueue.length);
 		findClient();
-		//while (resultsCounter > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
-		/*while (messageQueue.length > 0 && clientQueue.length > 0 && scaleDownTrigger == 0){
-			var client = clientQueue.shift();
-			var message = messageQueue.shift();
-			//mqttmod.send(broker,nextnodedatatopic,JSON.stringify(message));
-			sendData(message,client);
-			message = null;
-			client = null;
-			//var message = getRow(sendData,client);
-			//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
-		}*/
 		l.info('Live clients after assigning new jobs: '+clientQueue.length);
 		//safeguard in case that noone receives the messages and they are stacked in memory
 		if (messageQueue.length > messagequeuelimit){
