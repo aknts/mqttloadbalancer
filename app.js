@@ -288,13 +288,13 @@ function filterResults(payload) {
 		var results = JSON.parse(payload);
 		//resultsCounter += results.length;
 		//l.info('Adding '+results.length+' results to queue, queue now has '+resultsCounter+' items');
-		l.info('Adding '+results.length+' results to queue, queue now has '+messageQueue.length+' items');
+		l.info('Adding '+results.length+' results to queue, queue now has '+messageQueue.length+' items at: '+Date.now());
 		Array.prototype.push.apply(messageQueue,results);
 	}
 }
 
 function sendData (results,client) {
-	//l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid);
+	l.info('Sending payload to node '+client.node+' and to client with pid '+client.pid+'at: '+Date.now());
 	nextnodedatatopic = client.node+'/'+client.pid+'/data';
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 };
