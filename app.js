@@ -296,7 +296,7 @@ function filterResults(payload) {
 }
 
 function sendData (results,client) {
-	l.info('Sending payload of '+results.length+' results to node '+client.node+' and to client with pid '+client.pid+' at: '+Date.now());
+	l.info('Sending payload of '+JSON.parse(results).length+' results to node '+client.node+' and to client with pid '+client.pid+' at: '+Date.now());
 	nextnodedatatopic = client.node+'/'+client.pid+'/data';
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 };
