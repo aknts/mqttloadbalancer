@@ -44,7 +44,8 @@ var scaleUpTrigger = 0;
 var scaleDownTrigger = 0;
 var clientQueueDelTrigger = 0;
 var clientsDelTrigger = 0;
-//var pointerA = 0;
+var rxpointer = 0;
+var txpointer = 0;
 
 // Functions
 function filterRequests(payload){
@@ -289,14 +290,15 @@ function filterResults(payload) {
 		var results = JSON.parse(payload);
 		//resultsCounter += results.length;
 		//l.info('Adding '+results.length+' results to queue, queue now has '+resultsCounter+' items');
-		l.info('Adding '+results.length+' results to queue, queue now has '+messageQueue.length+' items at: '+Date.now());
-		//pointerA = pointerA + results.length;
+		rxpointer = rxpointer + results.length;
+		l.info('Adding '+results.length+' results to queue, rxpointer is '+rxpointer+' queue now has '+messageQueue.length+' items at: '+Date.now());
 		Array.prototype.push.apply(messageQueue,results);
 	}
 }
 
 function sendData (results,client) {
-	l.info('Sending payload of '+JSON.parse(results).length+' results to node '+client.node+' and to client with pid '+client.pid+' at: '+Date.now());
+	txpointer++;
+	l.info('Sending payload of '+results.signalArray.length+' results with txpointer value of '+txpointer+' to node '+client.node+' and to client with pid '+client.pid+' at: '+Date.now());
 	nextnodedatatopic = client.node+'/'+client.pid+'/data';
 	mqttmod.send(broker,nextnodedatatopic,JSON.stringify(results));
 };
